@@ -4,7 +4,8 @@ from typing import List, Optional, Tuple, Union
 import altair as alt
 import numpy as np
 import pandas as pd
-from toolbox.utils.formatting import millify
+
+from ds_toolbox.utils.formatting import millify
 
 
 def _create_string_labels(categories):

@@ -1,7 +1,8 @@
 import altair as alt
 import numpy as np
 import pandas as pd
-from toolbox.pandas.data_munging import flatten_column_index
+
+from ds_toolbox.pandas.data_munging import flatten_column_index
 
 
 def calibration_plot(
