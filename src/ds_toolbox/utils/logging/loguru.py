@@ -11,7 +11,7 @@ LOGURU_FORMAT = str(
 # default log levels
 default_log_levels = {
     "": "DEBUG",
-    "ds_toolbox.sklearn.transformers": "INFO",
+    "dstoolbox.sklearn.transformers": "INFO",
 }
 
 
@@ -37,7 +37,7 @@ def showwarning(message, *args, **kwargs):
     .. code-block:: python
 
         import warnings
-        import ds_toolbox.utils.logging.loguru as log
+        import dstoolbox.utils.logging.loguru as log
 
         showwarning_ = warnings.showwarning
         warnings.showwarning = log.showwarning
