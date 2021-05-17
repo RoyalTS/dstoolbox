@@ -145,3 +145,23 @@ def flatten_column_index(columns: pd.core.indexes.multi.MultiIndex) -> list:
         raise ValueError("columns must be pd.core.indexes.multi.MultiIndex")
 
     return ["_".join(tuple(map(str, t))).rstrip("_") for t in columns]
+
+
+def is_booleanish(series: pd.Series) -> bool:
+    """Test if a pandas.Series is a boolean with NA (and therefore is carried as object).
+
+    Parameters
+    ----------
+    series : pd.Series
+        pandas Series
+
+    Returns
+    -------
+    bool
+        whether series is a boolean Series containing NAs
+    """
+    if series.dtype != "object":
+        return False
+    else:
+        # FIXME? This is a bit imprecise: None != np.nan
+        return set(series) == set([True, False, None])
