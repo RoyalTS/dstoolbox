@@ -25,7 +25,23 @@ def missing_suspect_columns(
     df: pd.DataFrame,
     missing_suspect_values: Optional[list] = None,
 ) -> list:
-    """Find the names of columns which contain values that might actually be missings."""
+    """Find the names of columns which contain values that might actually be missings.
+    
+    Will look for that values contained in dirty_values.common_missing_fills as well as
+    any `missing_suspect_values` passed
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame
+    missing_suspect_values : Optional[list], optional
+        additional values that should be considered missing suspects, by default None
+
+    Returns
+    -------
+    list
+        list of column names in df
+    """
     if missing_suspect_values is None:
         missing_suspect_values = []
 
