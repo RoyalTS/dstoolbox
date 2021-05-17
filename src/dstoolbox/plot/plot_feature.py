@@ -116,17 +116,17 @@ def _compute_bin_edges(
 
 
 def plot_feature(
-    df,
-    feature,
-    target_var=None,
-    binning_method="auto",
-    n_bins=20,
-    clip_quantiles=(0.01, 0.99),
-    drop_na=False,
-    lower_var="share",
-    axis_scale="linear",
-    split_var=None,
-    descriptions=None,
+    df: pd.DataFrame,
+    feature: str,
+    target_var: str = None,
+    binning_method: str = "auto",
+    n_bins: int = 20,
+    clip_quantiles: list = (0.01, 0.99),
+    drop_na: bool = False,
+    lower_var: str = "share",
+    axis_scale: str = "linear",
+    split_var: Optional[str] = None,
+    descriptions: Optional[pd.DataFrame] = None,
 ):
     """Plot the relationship between a feature and the target variable.
 
