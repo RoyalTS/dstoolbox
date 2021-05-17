@@ -138,7 +138,7 @@ def plot_feature(
         feature variable name
     target_var : str, optional
         target variable name if any
-    binning_method: str, optional
+    binning_method: str
         whether to create "equidistant" bins or bin by "quantile" or to
         determine the best method "auto"matically
     n_bins : int, optional
@@ -165,12 +165,7 @@ def plot_feature(
 
     # save the original dtype (for later use)
     feature_dtype = df[feature].dtype
-
-    if binning_method == "auto":
-        if target_var:
-            binning_method = "quantiles"
-        else:
-            binning_method = "equidistant"
+    unique_values = df[feature].nunique(dropna=False)
 
     if pd.api.types.is_object_dtype(df[feature]):
         var_type = "nominal"
@@ -188,7 +183,7 @@ def plot_feature(
             sort_order = df[feature].cat.categories.tolist()
 
     elif pd.api.types.is_numeric_dtype(df[feature]) & (
-        df[feature].nunique(dropna=False) < 20
+        unique_values < n_bins
     ):
         var_type = "quantitative"
         tick_min_step = 1
@@ -198,25 +193,32 @@ def plot_feature(
         var_type = "ordinal"
         tick_min_step = 1
 
-        # bin the numerical variable, give it pretty labels
-        if binning_method == None:
-            binned = df[feature]
-        if binning_method == "equidistant":
-            bin_edges = _compute_bin_edges(df[feature], n_bins, clip_quantiles)
-
-            binned = pd.cut(
-                df[feature],
-                bins=bin_edges,
-                duplicates="drop",
-            )
-        elif binning_method == "quantiles":
-            binned = pd.qcut(
-                df[feature],
-                n_bins,
-                duplicates="drop",
-            )
+        if unique_values < n_bins:
+            binned = df[feature].astype('category')
         else:
-            raise ValueError(f"binning_method '{binning_method}' not recognized")
+            # bin a numerical feature and give it pretty labels
+            if binning_method == "auto":
+                if target_var:
+                    binning_method = "quantiles"
+                else:
+                    binning_method = "equidistant"
+
+            if binning_method == "equidistant":
+                bin_edges = _compute_bin_edges(df[feature], n_bins, clip_quantiles)
+
+                binned = pd.cut(
+                    df[feature],
+                    bins=bin_edges,
+                    duplicates="drop",
+                )
+            elif binning_method == "quantiles":
+                binned = pd.qcut(
+                    df[feature],
+                    n_bins,
+                    duplicates="drop",
+                )
+            else:
+                raise ValueError(f"binning_method '{binning_method}' not recognized")
 
         # up the number of decimals in category labels until they become unique
         string_labels = _create_string_labels(binned.cat.categories)
