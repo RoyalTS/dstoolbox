@@ -168,7 +168,7 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
                     )
 
             # names according to the above masks
-            self.categories_[col] = value_counts[preserve_mask].index.tolist()
+            self.categories_[col] = value_counts[preserve_mask]['value'].tolist()
 
         return self
 
