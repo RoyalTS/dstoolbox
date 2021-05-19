@@ -6,7 +6,7 @@ import pandas as pd
 from loguru import logger
 
 
-def mixed_domain(series):
+def mixed_domain(series: pd.Series) -> pd.Series:
     """Determine mixed domain.
 
     Parameters
@@ -21,7 +21,7 @@ def mixed_domain(series):
     return (series < 0).any() & (series > 0).any()
 
 
-def find_signed_numeric_cols(X, domain="both"):
+def find_signed_numeric_cols(X: pd.DataFrame, domain: str = "both") -> List[str]:
     """Find the names of signed numeric columns.
 
     Return those columns from a pandas DataFrame whose values are either:
@@ -38,7 +38,7 @@ def find_signed_numeric_cols(X, domain="both"):
 
     Returns
     -------
-    array
+    list
         containing the names of the columns from X
     """
     numerics = X.select_dtypes(["integer", "float"])
@@ -56,7 +56,7 @@ def find_signed_numeric_cols(X, domain="both"):
     return signed_cols[signed_cols].index.tolist()
 
 
-def find_duplicated_columns(df):
+def find_duplicated_columns(df: pd.DataFrame) -> List[str]:
     """Find columns with identical values.
 
     Parameters
