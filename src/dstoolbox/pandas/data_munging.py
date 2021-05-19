@@ -165,3 +165,34 @@ def is_booleanish(series: pd.Series) -> bool:
     else:
         # FIXME? This is a bit imprecise: None != np.nan
         return set(series) == set([True, False, None])
+
+
+def weekdays_as_category(ser: pd.Series) -> pd.Series:
+    """Convert a series of weekday strings into an ordered category.
+
+    Parameters
+    ----------
+    ser : pd.Series
+        Series of uppercase weekday names
+
+    Returns
+    -------
+    pd.Series
+        Series of dtype category
+    """
+    import calendar
+
+    if pd.api.types.is_object_dtype(ser):
+        ser = ser.astype("category")
+
+    if ser.cat.categories.str.isupper().all():
+        cats = [day.upper() for day in calendar.day_name]
+    else:
+        cats = [day for day in calendar.day_name]
+
+    ser = ser.cat.reorder_categories(
+        new_categories=cats,
+        ordered=True,
+    )
+
+    return ser
