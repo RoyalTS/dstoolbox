@@ -159,12 +159,12 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
                     f"Bucketting {kill_count} values in column {col} into a "
                     f'"{self.other_value}" category either because they occurred fewer '
                     f"than {self.threshold_absolute} times or because their share was "
-                    f"less than {self.threshold_relative * 100:.1f}% during fit:",
+                    f"less than {self.threshold_relative * 100:.3f}% during fit:",
                 )
                 for val in value_counts[~preserve_mask].to_dict("records"):
                     logger.trace(
                         f"- {val['value']} ({val['count']} cases / "
-                        f"{val['share'] * 100:.1f}%)",
+                        f"{val['share'] * 100:.3f}%)",
                     )
 
             # names according to the above masks
