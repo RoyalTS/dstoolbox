@@ -206,4 +206,4 @@ def floor_to_week_start(ser: pd.Series) -> pd.Series:
     dt : pd.Series[datetime64[ns]]
         datetime series
     """
-    ser.dt.floor("D") - pd.to_timedelta(ser.dt.dayofweek, unit="d")
+    return ser.dt.floor("D") - pd.to_timedelta(ser.dt.dayofweek, unit="d")
