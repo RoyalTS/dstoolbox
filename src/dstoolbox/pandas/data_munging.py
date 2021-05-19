@@ -196,3 +196,14 @@ def weekdays_as_category(ser: pd.Series) -> pd.Series:
     )
 
     return ser
+
+
+def floor_to_week_start(ser: pd.Series) -> pd.Series:
+    """Floor a datetime Series to the date of the start of the week
+
+    Parameters
+    ----------
+    dt : pd.Series[datetime64[ns]]
+        datetime series
+    """
+    ser.dt.floor("D") - pd.to_timedelta(ser.dt.dayofweek, unit="d")
