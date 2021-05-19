@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.utils.validation import check_is_fitted
+from sklearn.utils.validation import check_is_fitted, check_array, check_X_y
 
 from ._sklearn_copies import _check_unknown
 
@@ -46,6 +46,7 @@ class Categorizer(BaseEstimator, TransformerMixin):
         self.handle_unknown = handle_unknown
 
     def fit(self, X, y):
+        check_X_y(X, y, dtype=None, force_all_finite=False)
         _check_categorical(X)
 
         # save the categories
@@ -57,6 +58,7 @@ class Categorizer(BaseEstimator, TransformerMixin):
     def transform(self, X):
 
         check_is_fitted(self)
+        check_array(X, dtype=None, force_all_finite=False)
 
         X_copy = X.astype("category").copy()
 
@@ -134,6 +136,8 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
         column key for preserving, since they meet both threshold_absolute and
         threshold_relative.
         """
+
+        check_X_y(X, y, dtype=None, force_all_finite=False)
         _check_categorical(X)
 
         for col in X.columns:
@@ -180,9 +184,12 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
         -------
             The transformed X with grouped buckets.
         """
+
         check_is_fitted(self)
+        check_array(X, dtype=None, force_all_finite=False)
 
         X_copy = X.copy()
+
         for col in X_copy.columns:
             # boolean mask for the values to be collapsed into the "other" category
             replacement_mask = ~X_copy[col].isin(self.categories_[col])
@@ -209,11 +216,14 @@ class CategoryMissingAdder(BaseEstimator, TransformerMixin):
         self.missing_value = missing_value
 
     def fit(self, X, y):
+        check_X_y(X, y, dtype=None, force_all_finite=False)
         _check_categorical(X)
 
         return self
 
     def transform(self, X):
+        check_array(X, dtype=None, force_all_finite=False)
+
         X_copy = X.copy()
 
         for col in X_copy.columns:
