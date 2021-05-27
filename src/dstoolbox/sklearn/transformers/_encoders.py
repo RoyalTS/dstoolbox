@@ -7,8 +7,6 @@ from loguru import logger
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_is_fitted, check_array, check_X_y
 
-from ._sklearn_copies import _check_unknown
-
 __all__ = ["Categorizer", "CategoryGrouper", "CategoryMissingAdder"]
 
 
@@ -51,7 +49,7 @@ class Categorizer(BaseEstimator, TransformerMixin):
 
         # save the categories
         for col in X.columns:
-            self.categories_[col] = X[col].unique().tolist()
+            self.categories_[col] = X[col].dropna().unique().tolist()
 
         return self
 
@@ -60,10 +58,10 @@ class Categorizer(BaseEstimator, TransformerMixin):
         check_is_fitted(self)
         check_array(X, dtype=None, force_all_finite=False)
 
-        X_copy = X.astype("category").copy()
+        X_copy = X.copy()
 
         for col in X_copy.columns:
-            diff = _check_unknown(X[col], self.categories_[col])
+            diff = list(set(X[col].dropna().unique()) - set(self.categories_[col]))
             if diff:
                 msg = (
                     f"Found {len(diff)} unknown categories in column {col} during fit."
@@ -77,16 +75,29 @@ class Categorizer(BaseEstimator, TransformerMixin):
 
                 elif self.handle_unknown == "ignore":
                     logger.debug("Leaving them as is")
-                    continue
+                    X_copy[col] = X_copy[col].astype(
+                        pd.CategoricalDtype(categories=self.categories_[col] + diff)
+                    )
 
                 elif self.handle_unknown == "missing":
                     logger.debug("Converting them to missings")
                     X_copy.loc[X_copy[col].isin(diff), col] = np.nan
+                    X_copy[col] = X_copy[col] = X_copy[col].astype(
+                        pd.CategoricalDtype(categories=self.categories_[col])
+                    )
 
                 elif self.handle_unknown == "mark":
                     logger.debug('Changing all of them to "(unknown)"')
-                    X_copy[col].cat.categories.append("(unknown)")
-                    X_copy[X_copy[col].isin(diff), col] = "(unknown)"
+                    X_copy.loc[X_copy[col].isin(diff), col] = "(unknown)"
+                    X_copy[col] = X_copy[col].astype(
+                        pd.CategoricalDtype(
+                            categories=self.categories_[col] + ["(unknown)"]
+                        )
+                    )
+            else:
+                X_copy[col] = X_copy[col].astype(
+                    pd.CategoricalDtype(categories=self.categories_[col])
+                )
 
         return X_copy
 
@@ -168,7 +179,7 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
                     )
 
             # names according to the above masks
-            self.categories_[col] = value_counts[preserve_mask]['value'].tolist()
+            self.categories_[col] = value_counts[preserve_mask]["value"].tolist()
 
         return self
 
