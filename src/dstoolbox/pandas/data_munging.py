@@ -205,5 +205,28 @@ def floor_to_week_start(ser: pd.Series) -> pd.Series:
     ----------
     dt : pd.Series[datetime64[ns]]
         datetime series
+
+    Returns
+    -------
+    pd.Series
+        datetime series
     """
     return ser.dt.floor("D") - pd.to_timedelta(ser.dt.dayofweek, unit="d")
+
+
+def decimal_time_of_day(ser: pd.Series) -> pd.Series:
+    """Calculate the time of day in 24-hour format with minutes as decimals
+
+    That is, e.g., 12:30 will become 12.5
+
+    Parameters
+    ----------
+    ser : pd.Series
+        datetime series
+
+    Returns
+    -------
+    pd.Series
+        float series
+    """
+    return (ser.dt.hour * 3600 + ser.dt.minute * 60 + ser.dt.second) / 3600
