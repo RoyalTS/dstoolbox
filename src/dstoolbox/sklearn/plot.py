@@ -5,12 +5,7 @@ import pandas as pd
 from dstoolbox.pandas.data_munging import flatten_column_index
 
 
-def calibration_plot(
-    clf,
-    X: pd.DataFrame,
-    y: np.array,
-    n_bins: int = 20,
-):
+def calibration_plot(clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_axes=False, color="blue"):
     """Plot the calibration of a scikit-learn model
 
     Parameters
@@ -38,7 +33,9 @@ def calibration_plot(
     )
 
     # bin the predicted probabilities, then calculate means and stds for both predictions and actuals within bins
-    pred_v_actual["predicted_binned"] = pd.qcut(pred_v_actual["predicted"], n_bins)
+    pred_v_actual["predicted_binned"] = pd.qcut(
+        pred_v_actual["predicted"], n_bins, duplicates="drop"
+    )
     pred_v_actual_agg = pred_v_actual.groupby("predicted_binned").agg(
         {
             "actual": ["mean", "std", "count"],
@@ -48,18 +45,24 @@ def calibration_plot(
     pred_v_actual_agg.columns = flatten_column_index(pred_v_actual_agg.columns)
 
     # to make the plot a square set the max on each axis to the max of the means
-    plot_max = max(
-        pred_v_actual_agg["predicted_mean"].max(),
-        pred_v_actual_agg["actual_mean"].max(),
-    )
+    plot_max = pred_v_actual_agg[["predicted_mean", "actual_mean"]].max().max()
+    plot_min = pred_v_actual_agg[["predicted_mean", "actual_mean"]].min().min()
 
-    domain = [0, plot_max]
+    domain_linear = [0, plot_max]
+    domain_log = [np.log(plot_min), np.log(plot_max)]
+
+    if log_axes:
+        domain = domain_log
+        scale = alt.Scale(domain=domain_log, type='log')
+    else:
+        domain = domain_linear
+        scale = alt.Scale(domain=domain_linear)
 
     # the Altair base specification on top of which to add line, points and error bars
     base = alt.Chart(pred_v_actual_agg).encode(
         x=alt.X(
             "predicted_mean",
-            scale=alt.Scale(domain=domain),
+            scale=scale,
             axis=alt.Axis(
                 grid=False,
                 title="Ø predicted probability",
@@ -67,9 +70,7 @@ def calibration_plot(
         ),
         y=alt.Y(
             "actual_mean",
-            scale=alt.Scale(
-                domain=domain,
-            ),
+            scale=scale,
             axis=alt.Axis(
                 grid=False,
                 title="Ø actual probability",
@@ -77,7 +78,7 @@ def calibration_plot(
         ),
     )
 
-    line = base.mark_line()
+    line = base.mark_line(color=color)
 
     points = base.mark_point()
 
@@ -90,9 +91,6 @@ def calibration_plot(
             x="predicted_mean",
             y=alt.Y(
                 "ymin:Q",
-                axis=alt.Axis(
-                    title="Ø actual probability",
-                ),
             ),
             y2=alt.Y2("ymax:Q"),
         )
