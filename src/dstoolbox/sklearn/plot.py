@@ -1,11 +1,12 @@
 import altair as alt
 import numpy as np
 import pandas as pd
-
 from dstoolbox.pandas.data_munging import flatten_column_index
 
 
-def calibration_plot(clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_axes=False, color="blue"):
+def calibration_plot(
+    clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_axes=False, color="blue"
+):
     """Plot the calibration of a scikit-learn model
 
     Parameters
@@ -53,11 +54,11 @@ def calibration_plot(clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_ax
     plot_min = pred_v_actual_agg[["predicted_mean", "actual_mean"]].min().min()
 
     domain_linear = [0, plot_max]
-    domain_log = [np.log(plot_min), np.log(plot_max)]
+    domain_log = [min(0.01, plot_min), plot_max]
 
     if log_axes:
         domain = domain_log
-        scale = alt.Scale(domain=domain_log, type='log')
+        scale = alt.Scale(domain=domain_log, type="log")
     else:
         domain = domain_linear
         scale = alt.Scale(domain=domain_linear)
@@ -86,21 +87,6 @@ def calibration_plot(clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_ax
 
     points = base.mark_point()
 
-    errorbars = (
-        base.transform_calculate(
-            ymin="datum.actual_mean - datum.actual_std",
-            ymax="datum.actual_mean + datum.actual_std",
-        )
-        .encode(
-            x="predicted_mean",
-            y=alt.Y(
-                "ymin:Q",
-            ),
-            y2=alt.Y2("ymax:Q"),
-        )
-        .mark_errorbar(color="lightgrey", clip=True)
-    )
-
     # a simple diagonal for comparison
     diagonal = (
         alt.Chart(
@@ -115,4 +101,21 @@ def calibration_plot(clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_ax
         .mark_line(color="grey")
     )
 
-    return diagonal + errorbars + line + points
+    # FIXME: for some reason the errorbar does not work with log transforms
+    if not log_axes:
+        errorbars = (
+            base.transform_calculate(
+                ymin="datum.actual_mean - datum.actual_std",
+                ymax="datum.actual_mean + datum.actual_std",
+            )
+            .encode(
+                x=alt.X("predicted_mean", scale=scale),
+                y=alt.Y("ymin:Q", scale=scale),
+                y2=alt.Y2("ymax:Q"),
+            )
+            .mark_errorbar(color="lightgrey", clip=True)
+        )
+        return diagonal + errorbars + line + points
+
+    else:
+        return diagonal + line + points
