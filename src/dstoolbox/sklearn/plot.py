@@ -18,6 +18,10 @@ def calibration_plot(clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_ax
         Actual outcomes
     n_bins : int, optional
         Number of bins to display in the plot, by default 20
+    log_axes : boolean
+        Should the aces be logarithmic
+    color: str
+        color of the dots and lines
 
     Returns
     -------
