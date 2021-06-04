@@ -1,10 +1,10 @@
 """Functions for data munging."""
-from argparse import ArgumentError
 from typing import List
 
 import pandas as pd
 from loguru import logger
 from itertools import tee
+from collections.abc import Iterable
 
 
 def mixed_domain(series: pd.Series) -> pd.Series:
@@ -233,9 +233,6 @@ def decimal_time_of_day(ser: pd.Series) -> pd.Series:
     return (ser.dt.hour * 3600 + ser.dt.minute * 60 + ser.dt.second) / 3600
 
 
-
-from collections.abc import Iterable
-
 def _pairwise(iterable: Iterable) -> list:
     """Returns all pairs of successive elements of a list:
 
@@ -244,6 +241,7 @@ def _pairwise(iterable: Iterable) -> list:
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
+
 
 def check_lengths_all_equal(*args):
     """Check the lengths of all passed objects is the same."""
