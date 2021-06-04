@@ -263,3 +263,22 @@ def check_indices_all_equal(*args):
         raise ValueError(
             f"Passed Series and DataFrames don't all have indentical indices. :{unequal_pairs[0]}"
         )
+
+
+def calculate_midpoints(ser: pd.Series) -> pd.Series:
+    """Calculate the midpoints between the numbers in a pandas.Series
+    (implicitly adding on a 0 at the start)
+
+    Parameters
+    ----------
+    ser : pd.Series
+        float series
+
+    Returns
+    -------
+    pd.Series
+        float series
+    """
+    ser_cum = ser.cumsum()
+    ser_cum_lag = ser_cum.shift(1).fillna(0)
+    return ser_cum_lag + ser / 2
