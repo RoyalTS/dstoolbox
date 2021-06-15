@@ -10,4 +10,6 @@ def git_tag() -> str:
     str
         git tag or commit hash
     """
-    return subprocess.check_output(["git", "describe", "--always"]).strip()
+    return (
+        subprocess.check_output(["git", "describe", "--always"]).strip().decode("utf-8")
+    )
