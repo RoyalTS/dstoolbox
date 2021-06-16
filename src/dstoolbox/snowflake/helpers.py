@@ -24,3 +24,6 @@ def attach_timezone_to_datetime_cols(
         df[col] = df[col].dt.tz_localize(tz)
 
     return df
+
+def get_last_commit_time(object_name, engine):
+    return engine.execute(f"SELECT TO_TIMESTAMP(SYSTEM$LAST_CHANGE_COMMIT_TIME('{object_name}') / 1000)").fetchone()[0]
