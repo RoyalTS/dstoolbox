@@ -16,7 +16,7 @@ def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_DB_") -> dict:
     -------
     dict
         dictionary containing corresponding to the environment variables
-        stripped on the prefix
+        stripped of the prefix
     """
 
     creds = {
@@ -37,10 +37,14 @@ def create_snowflake_connection(creds: dict):
     Parameters
     ----------
     creds : dict
-        dictionary of credentials containing keys 'user', 'account', 'warehouse', 'role', 'schema', 'database'
+        dictionary of credentials containing keys 'user', 'account',
+        'warehouse', 'role', 'schema', 'database' and optionally 'password'. If
+        no password is supplied authentication via SSO is triggered
     """
+    if not 'password' in creds:
+        creds['authenticator']="externalbrowser"
 
-    ctx = snowflake.connector.connect(authenticator="externalbrowser", **creds)
+    ctx = snowflake.connector.connect(**creds)
 
     return ctx
 
@@ -52,13 +56,18 @@ def create_snowflake_engine(creds: dict) -> sa.engine.base.Engine:
     Parameters
     ----------
     creds : dict
-        dictionary of credentials containing keys 'user', 'account', 'warehouse', 'role', 'schema', 'database'
+        dictionary of credentials containing keys 'user', 'account',
+        'warehouse', 'role', 'schema', 'database' and optionally 'password'. If
+        no password is supplied authentication via SSO is triggered
 
     Returns
     -------
     sa.engine.base.Engine
         SQLAlchemy engine
     """
-    engine = sa.create_engine(URL(**creds, authenticator="externalbrowser"))
+    if not 'password' in creds:
+        creds['authenticator']="externalbrowser"
+
+    engine = sa.create_engine(URL(**creds))
 
     return engine
