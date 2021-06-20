@@ -186,13 +186,21 @@ def weekdays_as_category(ser: pd.Series) -> pd.Series:
     if pd.api.types.is_object_dtype(ser):
         ser = ser.astype("category")
 
-    if ser.cat.categories.str.isupper().all():
-        cats = [day.upper() for day in calendar.day_name]
+    # Full names
+    if set(ser.cat.categories.str.upper()) == set(calendar.day_name.upper()):
+        day_names = calendar.day_name
+    # Abbreviated names
+    elif set(ser.cat.categories.str.upper()) == set(calendar.day_abbr.upper()):
+        day_names = calendar.day_abbr
     else:
-        cats = [day for day in calendar.day_name]
+        raise ValueError('Unrecognized day names.')
+
+    # If the source was upper-case, upper-case the target as well
+    if ser.cat.categories.str.isupper().all():
+        day_names = [day.upper() for day in day_names]
 
     ser = ser.cat.reorder_categories(
-        new_categories=cats,
+        new_categories=day_names,
         ordered=True,
     )
 
