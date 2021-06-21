@@ -231,9 +231,14 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
 
         for col in X_copy.columns:
             if self.categories_to_group_[col]:
+                # Add the "other" category
                 X_copy[col] = X_copy[col].cat.add_categories(self.other_value)
+
+                # replace all values that are to be grouped with this "other" value
                 for old_category in self.categories_to_group_[col]:
-                    X_copy.loc[old_category, col] = self.other_value
+                    X_copy.loc[X_copy[col] == old_category, col] = self.other_value
+
+                # remove grouped categories
                 X_copy[col] = X_copy[col].cat.remove_categories(
                     self.categories_to_group_[col]
                 )
