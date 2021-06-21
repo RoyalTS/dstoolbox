@@ -161,7 +161,12 @@ def is_booleanish(series: pd.Series) -> bool:
     bool
         whether series is a boolean Series containing NAs
     """
+    import warnings
+
     if series.dtype != "object":
+        return False
+    if series.isna().all():
+        warnings.warn("Series is completely NA. Can't tell if booleanish")
         return False
     else:
         # FIXME? This is a bit imprecise: None != np.nan
