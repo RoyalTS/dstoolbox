@@ -148,6 +148,7 @@ X_all_na = pd.DataFrame(
         (X_a_group_b_na, X_a_group_b_na, ["a", "(other)"]),
         (X_a_na, X_a_na, ["(other)"]),
         (X_all_na, X_all_na, ["(other)"]),
+        (X_a_b, X_all_na, ["a", "b"]),
     ],
 )
 def test_category_grouper_correct_categories(X_fit, X_transform, expected_categories):
