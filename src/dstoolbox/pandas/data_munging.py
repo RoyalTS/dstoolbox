@@ -187,19 +187,20 @@ def weekdays_as_category(ser: pd.Series) -> pd.Series:
         ser = ser.astype("category")
 
     # Full names
-    if set(ser.cat.categories.str.upper()) == set(calendar.day_name.upper()):
-        day_names = calendar.day_name
+    current_cats = set(ser.cat.categories.str.upper())
+    if current_cats.issubset(set([d.upper() for d in calendar.day_name])):
+        day_names = list(calendar.day_name)
     # Abbreviated names
-    elif set(ser.cat.categories.str.upper()) == set(calendar.day_abbr.upper()):
-        day_names = calendar.day_abbr
+    elif current_cats.issubset(set([d.upper() for d in calendar.day_abbr])):
+        day_names = list(calendar.day_abbr)
     else:
-        raise ValueError('Unrecognized day names.')
+        raise ValueError(f"Unrecognized day names: {ser.cat.categories}")
 
     # If the source was upper-case, upper-case the target as well
     if ser.cat.categories.str.isupper().all():
         day_names = [day.upper() for day in day_names]
 
-    ser = ser.cat.reorder_categories(
+    ser = ser.cat.set_categories(
         new_categories=day_names,
         ordered=True,
     )
