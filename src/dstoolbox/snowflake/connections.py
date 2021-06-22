@@ -4,7 +4,7 @@ import snowflake.connector
 import os
 
 
-def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_DB_") -> dict:
+def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_") -> dict:
     """Get snowflake credentials from environment variables
 
     Parameters
@@ -24,8 +24,6 @@ def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_DB_") -> dict:
         for k, v in os.environ.items()
         if k.startswith(prefix)
     }
-
-    creds["database"] = creds.pop("name")
 
     return creds
 
