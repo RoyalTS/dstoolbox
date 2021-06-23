@@ -2,6 +2,7 @@ import sqlalchemy as sa
 from snowflake.sqlalchemy import URL
 import snowflake.connector
 import os
+from environs import Env
 
 
 def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_", mode:str='sqlalchemy') -> dict:
@@ -20,15 +21,24 @@ def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_", mode:str='sqlal
         stripped of the prefix
     """
 
-    creds = {
-        k.lower().replace(prefix.lower(), ""): v
-        for k, v in os.environ.items()
-        if k.startswith(prefix)
-    }
+    env = Env
+    env.read_env()
+
+    creds = {}
+
+    with env.prefixed(prefix):
+        creds['host'] = env("HOST", "deliveroo.eu-central-1")
+        creds['username'] = env("USERNAME",)
+        creds['warehouse'] = env("WAREHOUSE")
+        creds['role'] = env("ROLE")
+        creds['database'] = env("DATABASE")
+        creds['schema'] = env("SCHEMA")
 
     if mode == 'sqlalchemy':
-        creds['account'] = creds.pop('host')
-        creds['user'] = creds.pop('username')
+        if 'host' in creds and (not 'account' in creds):
+            creds['account'] = creds.pop('host')
+        if 'username' in creds and (not 'user' in creds):
+            creds['user'] = creds.pop('username')
 
     return creds
 
