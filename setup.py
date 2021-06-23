@@ -1,10 +1,13 @@
-from setuptools import find_packages, setup
+from setuptools import setup
 
-setup(
-    name="dstoolbox",
-    packages=find_packages(),
-    version="0.1.8",
-    description="A collection of utility functions for data science applications.",
-    author="Tobias Schmidt",
-    license="MIT",
-)
+if __name__ == "__main__":
+    try:
+        setup()
+    except:  # noqa
+        print(
+            "\n\nAn error occurred while building the project, "
+            "please ensure you have the most updated version of setuptools, "
+            "setuptools_scm and wheel with:\n"
+            "   pip install -U setuptools setuptools_scm wheel\n\n",
+        )
+        raise
