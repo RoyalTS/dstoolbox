@@ -49,7 +49,8 @@ def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_", mode:str='sqlal
 
     # log sanitize credentials
     clean_creds = creds.copy()
-    clean_creds['password'] = '*****'
+    if 'password' in clean_creds:
+        clean_creds['password'] = '*****'
     logger.debug(f"Read in Snowflake credentials from the entironment:\n{clean_creds}")
 
     return creds
