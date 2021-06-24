@@ -3,6 +3,8 @@ from snowflake.sqlalchemy import URL
 import snowflake.connector
 from environs import Env
 
+from loguru import logger
+
 
 def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_", mode:str='sqlalchemy') -> dict:
     """Get snowflake credentials from environment variables
@@ -44,6 +46,11 @@ def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_", mode:str='sqlal
             creds['account'] = creds.pop('host')
         if 'username' in creds and (not 'user' in creds):
             creds['user'] = creds.pop('username')
+
+    # log sanitize credentials
+    clean_creds = creds.copy()
+    clean_creds['password'] = '*****'
+    logger.debug(f"Read in Snowflake credentials from the entironment:\n{clean_creds}")
 
     return creds
 
