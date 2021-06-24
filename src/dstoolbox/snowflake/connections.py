@@ -4,6 +4,7 @@ import snowflake.connector
 from environs import Env
 
 from loguru import logger
+from pprint import pformat
 
 
 def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_", mode:str='sqlalchemy') -> dict:
@@ -51,7 +52,7 @@ def get_snowflake_credentials_from_env(prefix :str="SNOWFLAKE_", mode:str='sqlal
     clean_creds = creds.copy()
     if 'password' in clean_creds:
         clean_creds['password'] = '*****'
-    logger.debug(f"Read in Snowflake credentials from the entironment:\n{clean_creds}")
+    logger.debug(f"Read in Snowflake credentials from the entironment:\n{pformat(clean_creds)}")
 
     return creds
 
