@@ -1,8 +1,14 @@
 """loguru-related functions."""
 from loguru import logger
 
-LOGURU_FORMAT = str(
+LOGURU_FORMAT_FULL = str(
     "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
+    "<level>{level: <7}</level> | "
+    "<cyan>{name:.10}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
+    "<level>{message}</level>",
+)
+
+LOGURU_FORMAT_SHORT = str(
     "<level>{level: <7}</level> | "
     "<cyan>{name:.10}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
     "<level>{message}</level>",
