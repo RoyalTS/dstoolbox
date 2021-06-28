@@ -176,6 +176,11 @@ def plot_feature(
         tick_min_step = 1
         sort_order = None
 
+    elif pd.api.types.is_bool_dtype(df[feature]):
+        var_type = "nominal"
+        tick_min_step = 1
+        sort_order = None
+
     elif pd.api.types.is_categorical_dtype(df[feature]):
         var_type = "nominal"
         tick_min_step = 1
@@ -254,6 +259,9 @@ def plot_feature(
 
     # Fill in an explicit missing category
     if not drop_na and df[feature].isna().any():
+        # need to cast from boolean to category to be able to display explicit missings
+        if pd.api.types.is_bool_dtype(df[feature]):
+            df[feature] = df[feature].astype('category')
         if pd.api.types.is_categorical_dtype(df[feature]):
             df[feature] = df[feature].cat.add_categories("NA")
         df[feature] = df[feature].fillna("NA")
