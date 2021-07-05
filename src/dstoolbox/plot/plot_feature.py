@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from dstoolbox.utils.formatting import millify
+from dstoolbox.pandas.data_munging import group_rare_categories
 
 
 def _create_string_labels(categories):
@@ -184,6 +185,10 @@ def plot_feature(
     elif pd.api.types.is_categorical_dtype(df[feature]):
         var_type = "nominal"
         tick_min_step = 1
+
+        if df[feature].nunique() > 100:
+            print('Variable has more than than 100 categories. Grouping categories that amount to less than 0.1% into "Other" category')
+            df[feature] = group_rare_categories(df[feature], 0.001)
 
         # unless the categorical is ordered already, order by frequency
         if not df[feature].cat.ordered:
