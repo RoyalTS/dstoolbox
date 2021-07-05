@@ -296,3 +296,27 @@ def calculate_midpoints(ser: pd.Series) -> pd.Series:
     ser_cum = ser.cumsum()
     ser_cum_lag = ser_cum.shift(1).fillna(0)
     return ser_cum_lag + ser / 2
+
+def group_rare_categories(ser: pd.Series, cum_prob:float) -> pd.Series:
+    """Group all categories whose share of the Series amount to fewer than cum_prob into an "Other" category
+
+    Parameters
+    ----------
+    ser : pd.Series
+        pandas.Series
+    cum_prob : float
+        cumulative probability of the categories to be grouped into "Other"
+
+    Returns
+    -------
+    pd.Series
+        pandas.Series
+    """
+    ser_out = ser.copy()
+
+    ser_out = ser_out.cat.add_categories("Other")
+    ser_out = ser_out.mask(ser_out.map(ser_out.value_counts(normalize=True)) < cum_prob, "Other")
+
+    ser_out = ser_out.cat.remove_unused_categories()
+
+    return ser_out
