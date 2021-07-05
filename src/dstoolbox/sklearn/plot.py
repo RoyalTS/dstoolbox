@@ -1,21 +1,23 @@
 import altair as alt
-import numpy as np
 import pandas as pd
+import numpy as np
 from dstoolbox.pandas.data_munging import flatten_column_index
 
 
 def calibration_plot(
-    clf, X: pd.DataFrame, y: np.array, n_bins: int = 20, log_axes=False, color="blue"
+    predicted: np.ndarray,
+    actual: np.ndarray,
+    n_bins: int = 20,
+    log_axes=False,
+    color="blue",
 ):
     """Plot the calibration of a scikit-learn model
 
     Parameters
     ----------
-    clf : sklearn.base.ClassifierMixin
-        Scikit learn-classifier
-    X : pd.DataFrame
-        Feature matrix
-    y : np.array
+    predicted : np.ndarray
+        Predicted outcomes
+    actual : np.ndarray
         Actual outcomes
     n_bins : int, optional
         Number of bins to display in the plot, by default 20
@@ -31,10 +33,7 @@ def calibration_plot(
     """
     # combine predicted probabilities and actual outcomes in a single pandas DataFrame
     pred_v_actual = pd.DataFrame(
-        {
-            "actual": y,
-            "predicted": clf.predict_proba(X)[:, 1],
-        },
+        {"actual": actual, "predicted": predicted},
     )
 
     # bin the predicted probabilities, then calculate means and stds for both predictions and actuals within bins
@@ -97,7 +96,10 @@ def calibration_plot(
                 },
             ),
         )
-        .encode(alt.X("predicted_mean"), alt.Y("actual_mean"))
+        .encode(
+            alt.X("predicted_mean", title=None),
+            alt.Y("actual_mean", title=None),
+        )
         .mark_line(color="grey")
     )
 
@@ -109,9 +111,9 @@ def calibration_plot(
                 ymax="datum.actual_mean + datum.actual_std",
             )
             .encode(
-                x=alt.X("predicted_mean", scale=scale),
-                y=alt.Y("ymin:Q", scale=scale),
-                y2=alt.Y2("ymax:Q"),
+                x=alt.X("predicted_mean", scale=scale, title=None),
+                y=alt.Y("ymin:Q", scale=scale, title=None),
+                y2=alt.Y2("ymax:Q", title=None),
             )
             .mark_errorbar(color="lightgrey", clip=True)
         )
