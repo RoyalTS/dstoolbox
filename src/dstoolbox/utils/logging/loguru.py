@@ -30,8 +30,11 @@ def set_up_logger(stdout_log_level="INFO", log_file=None):
     # level commensurate with the environment for stdout (seen in Jenkins in production)
     # unless overridden via command line argument
     logger.remove()
-    logger.add(sys.__stdout__, level=stdout_log_level, format=LOGURU_FORMAT_SHORT)
-    logger.add(log_file, level="TRACE", format=LOGURU_FORMAT_FULL)
+    if log_file:
+        logger.add(sys.__stdout__, level=stdout_log_level, format=LOGURU_FORMAT_SHORT)
+        logger.add(log_file, level="TRACE", format=LOGURU_FORMAT_FULL)
+    else:
+        logger.add(sys.__stdout__, level=stdout_log_level, format=LOGURU_FORMAT_FULL)
 
 
 class StreamToLogger:
