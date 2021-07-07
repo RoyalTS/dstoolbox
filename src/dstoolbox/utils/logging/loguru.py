@@ -1,5 +1,10 @@
 """loguru-related functions."""
 import sys
+from typing import TYPE_CHECKING
+
+AnyPath = None
+if TYPE_CHECKING:
+    from _typeshed import AnyPath
 
 from loguru import logger
 
@@ -25,10 +30,19 @@ default_log_levels = {
 }
 
 
-def set_up_logger(stdout_log_level="INFO", log_file=None):
-    # redirect stdout to logger, set log level to TRACE for file output always and to a
-    # level commensurate with the environment for stdout (seen in Jenkins in production)
-    # unless overridden via command line argument
+def set_up_logger(stdout_log_level="INFO", log_file: AnyPath = None) -> None:
+    """Set up the loguru logger.
+
+    - Redirect stdout to logger and output logger back to stdout, with log-level INFO unless otherwise specified
+    - if a log_file is passed, set up a logger to that file with log-level TRACE
+
+    Parameters
+    ----------
+    stdout_log_level : str, optional
+        log level for stdout output, by default "INFO"
+    log_file : AnyPath, optional
+        path to the log file, by default None
+    """
     logger.remove()
     if log_file:
         logger.add(sys.__stdout__, level=stdout_log_level, format=LOGURU_FORMAT_SHORT)

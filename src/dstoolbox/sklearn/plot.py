@@ -1,6 +1,7 @@
 import altair as alt
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 from dstoolbox.pandas.data_munging import flatten_column_index
 
 
@@ -38,7 +39,9 @@ def calibration_plot(
 
     # bin the predicted probabilities, then calculate means and stds for both predictions and actuals within bins
     pred_v_actual["predicted_binned"] = pd.qcut(
-        pred_v_actual["predicted"], n_bins, duplicates="drop"
+        pred_v_actual["predicted"],
+        n_bins,
+        duplicates="drop",
     )
     pred_v_actual_agg = pred_v_actual.groupby("predicted_binned").agg(
         {

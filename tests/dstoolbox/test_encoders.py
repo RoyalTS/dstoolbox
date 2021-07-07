@@ -1,8 +1,11 @@
+from contextlib import contextmanager
+
 import pytest
+
 import numpy as np
 import pandas as pd
+
 import dstoolbox.sklearn.transformers as t
-from contextlib import contextmanager
 
 
 @contextmanager
@@ -21,21 +24,21 @@ X_cat = pd.DataFrame(
     {
         "var1": pd.Categorical(["a"]),
         "var2": pd.Categorical(["b"]),
-    }
+    },
 )
 
 X_cat_object = pd.DataFrame(
     {
         "var1": pd.Categorical(["a"]),
         "var2": pd.Series(["b"], dtype="object"),
-    }
+    },
 )
 
 X_cat_numeric = pd.DataFrame(
     {
         "var1": pd.Categorical(["a"]),
         "var2": pd.Series([1], dtype=np.int64),
-    }
+    },
 )
 
 # test that _check_categorical raises appropriately
@@ -59,25 +62,25 @@ def test_check_categorical_raises(X, expect_raises):
 X_a = pd.DataFrame(
     {
         "var1": pd.Categorical(["a"]),
-    }
+    },
 )
 
 X_a_na = pd.DataFrame(
     {
         "var1": pd.Categorical(["a", np.nan]),
-    }
+    },
 )
 
 X_a_empty = pd.DataFrame(
     {
         "var1": pd.Categorical([np.nan], categories=["a"]),
-    }
+    },
 )
 
 X_na = pd.DataFrame(
     {
         "var1": pd.Categorical([np.nan]),
-    }
+    },
 )
 
 
@@ -114,27 +117,27 @@ def test_categorizer_no_unknowns(X_fit, X_transform, expected_categories):
 X_a_b = pd.DataFrame(
     {
         "var1": pd.Categorical(["a", "a", "b", "b"], categories=["a", "b"]),
-    }
+    },
 )
 X_a_group_b = pd.DataFrame(
     {
         "var1": pd.Categorical(["a", "a", "a", "b"], categories=["a", "b"]),
-    }
+    },
 )
 X_a_group_b_na = pd.DataFrame(
     {
         "var1": pd.Categorical(["a", "a", np.nan, "b"], categories=["a", "b"]),
-    }
+    },
 )
 X_a_na = pd.DataFrame(
     {
         "var1": pd.Categorical(["a", np.nan, np.nan, np.nan], categories=["a", "b"]),
-    }
+    },
 )
 X_all_na = pd.DataFrame(
     {
         "var1": pd.Categorical([np.nan, np.nan, np.nan, np.nan], categories=["a", "b"]),
-    }
+    },
 )
 
 
@@ -157,5 +160,6 @@ def test_category_grouper_correct_categories(X_fit, X_transform, expected_catego
     X_trans = fit_transform(grouper, X_fit, X_transform)
 
     assert X_trans["var1"].dtype == pd.CategoricalDtype(
-        categories=expected_categories, ordered=False
+        categories=expected_categories,
+        ordered=False,
     )

@@ -1,6 +1,7 @@
-import jinja2
-import typing
 import pathlib
+import typing
+
+import jinja2
 from loguru import logger
 
 

@@ -1,6 +1,7 @@
 import json
-import altair as alt
 from urllib import request
+
+import altair as alt
 
 
 def set_altair_locale(locale: str) -> None:
@@ -21,5 +22,6 @@ def set_altair_locale(locale: str) -> None:
     with request.urlopen(time_format_url) as f:
         uk_time_format = json.load(f)
     alt.renderers.set_embed_options(
-        formatLocale=uk_format, timeFormatLocale=uk_time_format
+        formatLocale=uk_format,
+        timeFormatLocale=uk_time_format,
     )

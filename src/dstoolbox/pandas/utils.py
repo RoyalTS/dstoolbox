@@ -1,6 +1,11 @@
 import pandas as pd
 
-def set_output_defaults(max_rows: int=999, max_columns: int=999, decimals: int=4) -> None:
+
+def set_output_defaults(
+    max_rows: int = 999,
+    max_columns: int = 999,
+    decimals: int = 4,
+) -> None:
     """Set output defaults for pandas
 
     Parameters

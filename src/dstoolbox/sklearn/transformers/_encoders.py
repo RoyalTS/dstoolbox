@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.utils.validation import check_is_fitted, check_array, check_X_y
+from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
 
 __all__ = [
     "_check_categorical",
@@ -94,15 +94,15 @@ class Categorizer(BaseEstimator, TransformerMixin):
                     logger.debug("Leaving them as is")
                     X_copy[col] = X_copy[col].astype(
                         pd.CategoricalDtype(
-                            categories=self.categories_[col] + unknown_categories
-                        )
+                            categories=self.categories_[col] + unknown_categories,
+                        ),
                     )
 
                 elif self.handle_unknown == "missing":
                     logger.debug("Converting them to missings")
                     X_copy.loc[X_copy[col].isin(unknown_categories), col] = np.nan
                     X_copy[col] = X_copy[col] = X_copy[col].astype(
-                        pd.CategoricalDtype(categories=self.categories_[col])
+                        pd.CategoricalDtype(categories=self.categories_[col]),
                     )
 
                 elif self.handle_unknown == "mark":
@@ -110,18 +110,18 @@ class Categorizer(BaseEstimator, TransformerMixin):
                     X_copy.loc[X_copy[col].isin(unknown_categories), col] = "(unknown)"
                     X_copy[col] = X_copy[col].astype(
                         pd.CategoricalDtype(
-                            categories=self.categories_[col] + ["(unknown)"]
-                        )
+                            categories=self.categories_[col] + ["(unknown)"],
+                        ),
                     )
             else:
                 X_copy[col] = X_copy[col].astype(
-                    pd.CategoricalDtype(categories=self.categories_[col])
+                    pd.CategoricalDtype(categories=self.categories_[col]),
                 )
             categories_not_present = list(set(self.categories_[col]) - unique_vals)
             if categories_not_present:
                 logger.debug(
                     f"Column {col}: Categories {categories_not_present} do not occur "
-                    "in the data but will nonetheless be added to the categories."
+                    "in the data but will nonetheless be added to the categories.",
                 )
 
         return X_copy
@@ -206,7 +206,7 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
                 "value"
             ].tolist()
             logger.trace(
-                f"Final list of categories to be grouped: {self.categories_to_group_[col]}"
+                f"Final list of categories to be grouped: {self.categories_to_group_[col]}",
             )
 
         return self
@@ -240,7 +240,7 @@ class CategoryGrouper(BaseEstimator, TransformerMixin):
 
                 # remove grouped categories
                 X_copy[col] = X_copy[col].cat.remove_categories(
-                    self.categories_to_group_[col]
+                    self.categories_to_group_[col],
                 )
 
         return X_copy

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import shap
 
+
 # FIXME?: This doesn't seem to return quite the same things as shap.summary_plot()
 def shap_importances(model, X: pd.DataFrame) -> pd.DataFrame:
     """Return a dataframe containing the features sorted by Shap importance

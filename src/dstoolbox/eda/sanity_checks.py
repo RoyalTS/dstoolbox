@@ -26,7 +26,7 @@ def missing_suspect_columns(
     missing_suspect_values: Optional[list] = None,
 ) -> list:
     """Find the names of columns which contain values that might actually be missings.
-    
+
     Will look for that values contained in dirty_values.common_missing_fills as well as
     any `missing_suspect_values` passed
 

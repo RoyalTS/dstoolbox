@@ -1,14 +1,15 @@
-import sqlalchemy as sa
-from snowflake.sqlalchemy import URL
-import snowflake.connector
-import environs
-
-from loguru import logger
 from pprint import pformat
+
+import environs
+import snowflake.connector
+import sqlalchemy as sa
+from loguru import logger
+from snowflake.sqlalchemy import URL
 
 
 def get_snowflake_credentials_from_env(
-    prefix: str = "SNOWFLAKE_", mode: str = "sqlalchemy"
+    prefix: str = "SNOWFLAKE_",
+    mode: str = "sqlalchemy",
 ) -> dict:
     """Get snowflake credentials from environment variables
 
@@ -58,7 +59,7 @@ def get_snowflake_credentials_from_env(
     if "password" in clean_creds:
         clean_creds["password"] = "*****"
     logger.debug(
-        f"Read in Snowflake credentials from the entironment:\n{pformat(clean_creds)}"
+        f"Read in Snowflake credentials from the entironment:\n{pformat(clean_creds)}",
     )
 
     return creds

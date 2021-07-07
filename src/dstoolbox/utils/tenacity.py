@@ -1,16 +1,17 @@
 import typing
-from tenacity import RetryCallState
-from tenacity import _utils
+
+from tenacity import RetryCallState, _utils
 from tenacity.compat import get_exc_info_from_future
 
 if typing.TYPE_CHECKING:
     import loguru
-
     from tenacity import RetryCallState
 
 
 def before_sleep_loguru(
-    logger: "loguru._logger.Logger", log_level: typing.Union[int, str], exc_info=False
+    logger: "loguru._logger.Logger",
+    log_level: typing.Union[int, str],
+    exc_info=False,
 ) -> typing.Callable[["RetryCallState"], None]:
     """After call strategy that logs to loguru logger the finished attempt."""
 

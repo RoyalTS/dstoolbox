@@ -1,10 +1,10 @@
 """Functions for data munging."""
+from collections.abc import Iterable
+from itertools import tee
 from typing import List
 
 import pandas as pd
 from loguru import logger
-from itertools import tee
-from collections.abc import Iterable
 
 
 def mixed_domain(series: pd.Series) -> pd.Series:
@@ -112,7 +112,7 @@ def concatenate_categorical_dfs(
     from pandas.api.types import union_categoricals
 
     categorical_cols = set.intersection(
-        *[set(df.select_dtypes(include=["category"]).columns) for df in dfs],
+        *(set(df.select_dtypes(include=["category"]).columns) for df in dfs),
     )
 
     # Iterate on categorical columns common to all dfs
@@ -170,7 +170,7 @@ def is_booleanish(series: pd.Series) -> bool:
         return False
     else:
         # FIXME? This is a bit imprecise: None != np.nan
-        return set(series) == set([True, False, None])
+        return set(series) == {True, False, None}
 
 
 def weekdays_as_category(ser: pd.Series) -> pd.Series:
@@ -193,10 +193,10 @@ def weekdays_as_category(ser: pd.Series) -> pd.Series:
 
     # Full names
     current_cats = set(ser.cat.categories.str.upper())
-    if current_cats.issubset(set([d.upper() for d in calendar.day_name])):
+    if current_cats.issubset({d.upper() for d in calendar.day_name}):
         day_names = list(calendar.day_name)
     # Abbreviated names
-    elif current_cats.issubset(set([d.upper() for d in calendar.day_abbr])):
+    elif current_cats.issubset({d.upper() for d in calendar.day_abbr}):
         day_names = list(calendar.day_abbr)
     else:
         raise ValueError(f"Unrecognized day names: {ser.cat.categories}")
@@ -262,7 +262,7 @@ def check_lengths_all_equal(*args):
     lengths = [len(x) for x in args]
     if not len(set(lengths)) == 1:
         raise ValueError(
-            f"Passed Series and DataFrames don't all have the same lenghts: {lengths}"
+            f"Passed Series and DataFrames don't all have the same lenghts: {lengths}",
         )
     else:
         return lengths[0]
@@ -275,7 +275,7 @@ def check_indices_all_equal(*args):
     if not all(pairs_equal):
         unequal_pairs = [pair for ix, pair in enumerate(pairs) if not pairs_equal[ix]]
         raise ValueError(
-            f"Passed Series and DataFrames don't all have indentical indices. :{unequal_pairs[0]}"
+            f"Passed Series and DataFrames don't all have indentical indices. :{unequal_pairs[0]}",
         )
 
 
@@ -297,7 +297,8 @@ def calculate_midpoints(ser: pd.Series) -> pd.Series:
     ser_cum_lag = ser_cum.shift(1).fillna(0)
     return ser_cum_lag + ser / 2
 
-def group_rare_categories(ser: pd.Series, cum_prob:float) -> pd.Series:
+
+def group_rare_categories(ser: pd.Series, cum_prob: float) -> pd.Series:
     """Group all categories whose share of the Series amount to fewer than cum_prob into an "Other" category
 
     Parameters
@@ -315,7 +316,10 @@ def group_rare_categories(ser: pd.Series, cum_prob:float) -> pd.Series:
     ser_out = ser.copy()
 
     ser_out = ser_out.cat.add_categories("Other")
-    ser_out = ser_out.mask(ser_out.map(ser_out.value_counts(normalize=True)) < cum_prob, "Other")
+    ser_out = ser_out.mask(
+        ser_out.map(ser_out.value_counts(normalize=True)) < cum_prob,
+        "Other",
+    )
 
     ser_out = ser_out.cat.remove_unused_categories()
 

@@ -5,8 +5,8 @@ import altair as alt
 import numpy as np
 import pandas as pd
 
-from dstoolbox.utils.formatting import millify
 from dstoolbox.pandas.data_munging import group_rare_categories
+from dstoolbox.utils.formatting import millify
 
 
 def _create_string_labels(categories):
@@ -187,7 +187,9 @@ def plot_feature(
         tick_min_step = 1
 
         if df[feature].nunique() > 100:
-            print('Variable has more than than 100 categories. Grouping categories that amount to less than 0.1% into "Other" category')
+            print(
+                'Variable has more than than 100 categories. Grouping categories that amount to less than 0.1% into "Other" category',
+            )
             df[feature] = group_rare_categories(df[feature], 0.001)
 
         # unless the categorical is ordered already, order by frequency
@@ -196,9 +198,7 @@ def plot_feature(
         else:
             sort_order = df[feature].cat.categories.tolist()
 
-    elif (
-        pd.api.types.is_numeric_dtype(df[feature]) & num_as_cat
-    ):
+    elif pd.api.types.is_numeric_dtype(df[feature]) & num_as_cat:
         var_type = "quantitative"
         tick_min_step = 1
         sort_order = None
@@ -266,7 +266,7 @@ def plot_feature(
     if not drop_na and df[feature].isna().any():
         # need to cast from boolean to category to be able to display explicit missings
         if pd.api.types.is_bool_dtype(df[feature]):
-            df[feature] = df[feature].astype('category')
+            df[feature] = df[feature].astype("category")
         if pd.api.types.is_categorical_dtype(df[feature]):
             df[feature] = df[feature].cat.add_categories("NA")
         df[feature] = df[feature].fillna("NA")
