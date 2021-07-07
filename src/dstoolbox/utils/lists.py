@@ -4,7 +4,7 @@ import itertools
 import typing
 
 
-def dict_product(list_dict: typing.Dict[list]) -> typing.List(dict):
+def dict_product(list_dict: typing.Dict[str, list]) -> typing.List[dict]:
     """Create the list-of-dictionary Cartesian product of a dictionary-of-lists.
 
     Parameters
