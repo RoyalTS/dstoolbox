@@ -2,6 +2,7 @@ name: dstoolbox
 channels:
   - conda-forge
 dependencies:
+  - importlib-metadata
   - pre-commit
   - environs
   - numpy

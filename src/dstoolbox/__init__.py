@@ -1,10 +1,5 @@
-from pkg_resources import DistributionNotFound, get_distribution
+from importlib_metadata import distribution, packages_distributions
 
-try:
-    # Change here if project is renamed and does not equal the package name
-    dist_name = __name__
-    __version__ = get_distribution(dist_name).version
-except DistributionNotFound:
-    __version__ = "unknown"
-finally:
-    del get_distribution, DistributionNotFound
+module_name = __name__
+dist_name = packages_distributions()[module_name][0]
+__version__ = distribution(dist_name).version
