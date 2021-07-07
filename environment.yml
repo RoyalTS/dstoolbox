@@ -1,7 +1,8 @@
 name: dstoolbox
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - pre-commit
-prefix: /Users/rooyalts/opt/miniconda3/envs/dstoolbox
+  - environs
+  - numpy
+  - pandas
