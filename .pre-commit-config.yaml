@@ -3,7 +3,6 @@ repos:
   rev: v4.0.1
   hooks:
   - id: trailing-whitespace
-  - id: check-added-large-files
   - id: check-ast
   - id: check-json
   - id: check-merge-conflict
@@ -15,6 +14,11 @@ repos:
   - id: mixed-line-ending
   - id: check-added-large-files
     args: ['--maxkb=500']
+
+- repo: https://github.com/asottile/seed-isort-config
+  rev: v2.2.0
+  hooks:
+  - id: seed-isort-config
 
 - repo: http://github.com/timothycrosley/isort
   rev: 5.9.1

@@ -38,7 +38,8 @@ indent = '    '
 skip = ['.tox', '.venv', 'build', 'dist']
 extra_standard_library = ['setuptools', 'pkg_resources']
 known_test = 'pytest'
-known_first_party = "{{ python_package_import_name }}"
+known_first_party = "dstoolbox"
+known_third_party = ["altair", "dstoolbox", "environs", "importlib_metadata", "jinja2", "loguru", "numpy", "pandas", "pytest", "setuptools", "shap", "sklearn", "snowflake", "sparklines", "sqlalchemy", "tenacity", "xgboost"]
 sections = ['FUTURE', 'STDLIB', 'TEST', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']
 default_section = 'THIRDPARTY'
 
