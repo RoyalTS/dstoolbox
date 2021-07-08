@@ -9,6 +9,7 @@ def calibration_plot(
     predicted: np.ndarray,
     actual: np.ndarray,
     n_bins: int = 20,
+    ci: bool = True,
     log_axes=False,
     color="blue",
 ):
@@ -22,10 +23,12 @@ def calibration_plot(
         Actual outcomes
     n_bins : int, optional
         Number of bins to display in the plot, by default 20
+    ci : bool, optional
+        whether or not to show confidence bands around the calibration line, by default True
     log_axes : boolean
         Should the aces be logarithmic
     color: str
-        color of the dots and lines
+        label to be used to color the calibration line
 
     Returns
     -------
@@ -50,6 +53,12 @@ def calibration_plot(
         },
     )
     pred_v_actual_agg.columns = flatten_column_index(pred_v_actual_agg.columns)
+    pred_v_actual_agg = pred_v_actual_agg.assign(
+        actual_stderr=lambda x: x["actual_std"] / x["actual_count"].pow(1.0 / 2),
+        actual_ci_lower=lambda x: x["actual_mean"] - 1.96 * x["actual_stderr"],
+        actual_ci_upper=lambda x: x["actual_mean"] + 1.96 * x["actual_stderr"],
+    )
+    pred_v_actual_agg["color"] = color
 
     # to make the plot a square set the max on each axis to the max of the means
     plot_max = pred_v_actual_agg[["predicted_mean", "actual_mean"]].max().max()
@@ -70,22 +79,17 @@ def calibration_plot(
         x=alt.X(
             "predicted_mean",
             scale=scale,
-            axis=alt.Axis(
-                grid=False,
-                title="Ø predicted probability",
-            ),
+            axis=alt.Axis(grid=False, title="Ø predicted probability"),
         ),
         y=alt.Y(
             "actual_mean",
             scale=scale,
-            axis=alt.Axis(
-                grid=False,
-                title="Ø actual probability",
-            ),
+            axis=alt.Axis(orient="left", grid=False, title="Ø actual probability"),
         ),
+        color=alt.Color("color", legend=alt.Legend(orient="top", title=None)),
     )
 
-    line = base.mark_line(color=color)
+    line = base.mark_line()
 
     points = base.mark_point()
 
@@ -100,27 +104,21 @@ def calibration_plot(
             ),
         )
         .encode(
-            alt.X("predicted_mean", title=None),
-            alt.Y("actual_mean", title=None),
+            alt.X("predicted_mean"),
+            alt.Y("actual_mean"),
         )
         .mark_line(color="grey")
     )
 
-    # FIXME: for some reason the errorbar does not work with log transforms
-    if not log_axes:
-        errorbars = (
-            base.transform_calculate(
-                ymin="datum.actual_mean - datum.actual_std",
-                ymax="datum.actual_mean + datum.actual_std",
-            )
-            .encode(
-                x=alt.X("predicted_mean", scale=scale, title=None),
-                y=alt.Y("ymin:Q", scale=scale, title=None),
-                y2=alt.Y2("ymax:Q", title=None),
-            )
-            .mark_errorbar(color="lightgrey", clip=True)
-        )
-        return diagonal + errorbars + line + points
+    errorbars = base.encode(
+        x=alt.X("predicted_mean", scale=scale),
+        y=alt.Y("actual_ci_lower", scale=scale),
+        y2=alt.Y2("actual_ci_upper"),
+    ).mark_area(color="lightgrey", clip=True, opacity=0.2)
 
-    else:
-        return diagonal + line + points
+    everything = diagonal
+    if ci:
+        everything += errorbars
+    everything = everything + line + points
+
+    return everything
