@@ -84,7 +84,7 @@ def calibration_plot(
         y=alt.Y(
             "actual_mean",
             scale=scale,
-            axis=alt.Axis(orient="left", grid=False, title="Ø actual probability"),
+            axis=alt.Axis(grid=False, title="Ø actual probability"),
         ),
         color=alt.Color("color", legend=alt.Legend(orient="top", title=None)),
     )
@@ -94,19 +94,10 @@ def calibration_plot(
     points = base.mark_point()
 
     # a simple diagonal for comparison
+    diag_df = pd.DataFrame({"predicted_mean": domain, "actual_mean": domain})
     diagonal = (
-        alt.Chart(
-            pd.DataFrame(
-                {
-                    "predicted_mean": domain,
-                    "actual_mean": domain,
-                },
-            ),
-        )
-        .encode(
-            alt.X("predicted_mean"),
-            alt.Y("actual_mean"),
-        )
+        alt.Chart(diag_df)
+        .encode(alt.X("predicted_mean"), alt.Y("actual_mean"))
         .mark_line(color="grey")
     )
 
