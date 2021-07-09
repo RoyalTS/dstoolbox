@@ -53,11 +53,7 @@ def calibration_plot(
         },
     )
     pred_v_actual_agg.columns = flatten_column_index(pred_v_actual_agg.columns)
-    pred_v_actual_agg = pred_v_actual_agg.assign(
-        actual_stderr=lambda x: x["actual_std"] / x["actual_count"].pow(1.0 / 2),
-        actual_ci_lower=lambda x: x["actual_mean"] - 1.96 * x["actual_stderr"],
-        actual_ci_upper=lambda x: x["actual_mean"] + 1.96 * x["actual_stderr"],
-    )
+
     pred_v_actual_agg["color"] = color
 
     # to make the plot a square set the max on each axis to the max of the means
@@ -65,7 +61,7 @@ def calibration_plot(
     plot_min = pred_v_actual_agg[["predicted_mean", "actual_mean"]].min().min()
 
     domain_linear = [0, plot_max]
-    domain_log = [min(0.01, plot_min), plot_max]
+    domain_log = [min(max(0.001, plot_min), 0.01), plot_max]
 
     if log_axes:
         domain = domain_log
@@ -73,6 +69,24 @@ def calibration_plot(
     else:
         domain = domain_linear
         scale = alt.Scale(domain=domain_linear)
+
+    pred_v_actual_agg = pred_v_actual_agg.assign(
+        actual_stderr=lambda x: x["actual_std"] / x["actual_count"].pow(1.0 / 2),
+        actual_ci_lower=lambda x: (x["actual_mean"] - 1.96 * x["actual_stderr"]).clip(
+            lower=domain[0],
+        ),
+        actual_ci_upper=lambda x: (x["actual_mean"] + 1.96 * x["actual_stderr"]).clip(
+            upper=1,
+        ),
+    )
+
+    # safeguard against zero and negative numbers with logs
+    if log_axes:
+        mean_cols = ["predicted_mean", "actual_mean"]
+        pred_v_actual_agg[mean_cols] = pred_v_actual_agg[mean_cols].clip(
+            lower=domain[0],
+            upper=1,
+        )
 
     # the Altair base specification on top of which to add line, points and error bars
     base = alt.Chart(pred_v_actual_agg).encode(
