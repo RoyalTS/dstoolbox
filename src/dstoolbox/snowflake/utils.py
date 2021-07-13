@@ -132,3 +132,29 @@ def raise_if_any_empty(
     empty = [obj for obj in objects if not check_non_empty(obj, engine)]
     if len(empty) > 0:
         raise EmptyError(objects=empty)
+
+
+def warehouse_info(
+    warehouse_name: str,
+    engine: sqlalchemy.engine.base.Engine,
+) -> pd.Series:
+    """Query for information about a warehouse
+
+    Parameters
+    ----------
+    warehouse_name : str
+        name of the warehouse
+    engine : sqlalchemy.engine.base.Engine
+        sqlalchemy
+
+    Returns
+    -------
+    pd.Series
+        Series containing information about the warehouse
+    """
+    warehouse_info = pd.read_sql(
+        f"SHOW WAREHOUSES LIKE '{warehouse_name}'",
+        engine,
+    )[["name", "type", "size", "started_clusters", "running", "queued"]]
+
+    return warehouse_info.iloc[0]
