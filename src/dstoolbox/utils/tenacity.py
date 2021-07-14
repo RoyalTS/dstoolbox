@@ -27,12 +27,16 @@ def before_sleep_loguru(
             verb, value = "returned", retry_state.outcome.result()
             local_exc_info = False  # exc_info does not apply when no exception
 
-        nth_attempt = _utils.to_ordinal(retry_state.attempt_number)
-        logger.opt(exception=local_exc_info).log(
-            log_level,
-            f"Retrying {_utils.get_callback_name(retry_state.fn)} "
-            f"for the {nth_attempt} time "
-            f"in {retry_state.next_action.sleep} seconds as it {verb} {value}.",
-        )
+        log_message = f"Retrying {_utils.get_callback_name(retry_state.fn)} "
+        log_message += f"for the {_utils.to_ordinal(retry_state.attempt_number)} time "
+
+        if retry_state.next_action:
+            log_message += f"in {retry_state.next_action.sleep} seconds "
+        else:
+            log_message += "soon "
+
+        log_message += f"as it {verb} {value}."
+
+        logger.opt(exception=local_exc_info).log(log_level, log_message)
 
     return log_it
