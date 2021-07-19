@@ -93,12 +93,12 @@ def calibration_plot(
         x=alt.X(
             "predicted_mean",
             scale=scale,
-            axis=alt.Axis(grid=False, title="Ø predicted probability"),
+            axis=alt.Axis(title="Ø predicted probability", format="%"),
         ),
         y=alt.Y(
             "actual_mean",
             scale=scale,
-            axis=alt.Axis(grid=False, title="Ø actual probability"),
+            axis=alt.Axis(title="Ø actual probability", format="%"),
         ),
         color=alt.Color("color", legend=alt.Legend(orient="top", title=None)),
     )
