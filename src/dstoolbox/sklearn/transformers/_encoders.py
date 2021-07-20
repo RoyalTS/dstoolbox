@@ -120,9 +120,11 @@ class Categorizer(BaseEstimator, TransformerMixin):
             categories_not_present = list(set(self.categories_[col]) - unique_vals)
             if categories_not_present:
                 logger.debug(
-                    f"Column {col}: Categories {categories_not_present} do not occur "
+                    f"Column {col}: {len(categories_not_present)} categories do not occur "
                     "in the data but will nonetheless be added to the categories.",
                 )
+                for cat in categories_not_present:
+                    logger.trace(f"- {cat}")
 
         return X_copy
 
