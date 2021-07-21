@@ -1,8 +1,13 @@
 from setuptools import setup
 
+import versioneer
+
 if __name__ == "__main__":
     try:
-        setup()
+        setup(
+            version=versioneer.get_version(),
+            cmdclass=versioneer.get_cmdclass(),
+        )
     except:  # noqa
         print(
             "\n\nAn error occurred while building the project, "

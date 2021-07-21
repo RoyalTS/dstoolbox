@@ -1,5 +1,3 @@
-from importlib_metadata import distribution, packages_distributions
+from . import _version
 
-module_name = __name__
-dist_name = packages_distributions()[module_name][0]
-__version__ = distribution(dist_name).version
+__version__ = _version.get_versions()["version"]
