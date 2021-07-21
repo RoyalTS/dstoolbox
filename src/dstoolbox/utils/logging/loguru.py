@@ -24,13 +24,16 @@ LOGURU_FORMAT_SHORT = str(
 )
 
 # default log levels
-default_log_levels = {
-    "": "DEBUG",
+default_filter = {
     "dstoolbox.sklearn.transformers": "INFO",
 }
 
 
-def set_up_logger(stdout_log_level="INFO", log_file: AnyPath = None) -> None:
+def set_up_logger(
+    stdout_log_level="INFO",
+    log_file: AnyPath = None,
+    filter: dict = default_filter,
+) -> None:
     """Set up the loguru logger.
 
     - Redirect stdout to logger and output logger back to stdout, with log-level INFO unless otherwise specified
@@ -42,13 +45,20 @@ def set_up_logger(stdout_log_level="INFO", log_file: AnyPath = None) -> None:
         log level for stdout output, by default "INFO"
     log_file : AnyPath, optional
         path to the log file, by default None
+    filter : dict, optional
+        A loguru filter directive (https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.add)
     """
     logger.remove()
     if log_file:
-        logger.add(sys.__stdout__, level=stdout_log_level, format=LOGURU_FORMAT_SHORT)
+        # create the directory if it does not exist
+        log_file.parent.mkdir(parents=True, exist_ok=True)
         logger.add(log_file, level="TRACE", format=LOGURU_FORMAT_FULL)
+
+    if log_file:
+        log_format = LOGURU_FORMAT_SHORT
     else:
-        logger.add(sys.__stdout__, level=stdout_log_level, format=LOGURU_FORMAT_FULL)
+        log_format = LOGURU_FORMAT_FULL
+    logger.add(sys.__stdout__, level=stdout_log_level, filter=filter, format=log_format)
 
 
 class StreamToLogger:
