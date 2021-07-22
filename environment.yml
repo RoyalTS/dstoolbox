@@ -3,7 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - versioneer
-  - importlib-metadata
   - pre-commit
   - environs
   - numpy
