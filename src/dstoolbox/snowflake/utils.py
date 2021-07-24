@@ -158,3 +158,37 @@ def warehouse_info(
     )[["name", "type", "size", "started_clusters", "running", "queued"]]
 
     return warehouse_info.iloc[0]
+
+
+class NotUniqueError(Exception):
+    """Exception raised when a Snowflake column is not unique
+
+    Attributes
+    ----------
+    object : names of the object that contains the non-unique column
+    column : names of the object that contains the non-unique column
+    message : The message displayed
+    """
+
+    def __init__(self, object, column, message="Column is not unique"):
+        self.object = object
+        self.column = column
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}: {self.object}.{self.column}"
+
+
+def check_column_is_unique(
+    object_name: str,
+    column_name: str,
+    engine: sqlalchemy.engine.base.Engine,
+):
+    """Check if a column of a Snowflake object is unique."""
+    with engine.connect() as con:
+        is_unique = con.execute(
+            f"SELECT COUNT({column_name}) =  COUNT(DISTINCT {column_name}) FROM {object_name}",
+        ).fetchone()[0]
+
+    return is_unique
