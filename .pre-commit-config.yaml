@@ -103,6 +103,12 @@ repos:
   - id: blacken-docs
     additional_dependencies: [black]
 
+- repo: https://github.com/hadialqattan/pycln
+  rev: 0.0.4 # Possible releases: https://github.com/hadialqattan/pycln/releases
+  hooks:
+    - id: pycln
+      args: [--config=pyproject.toml]
+
 - repo: https://github.com/nbQA-dev/nbQA
   rev: 1.0.0
   hooks:
