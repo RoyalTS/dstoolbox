@@ -299,7 +299,11 @@ def calculate_midpoints(ser: pd.Series) -> pd.Series:
     return ser_cum_lag + ser / 2
 
 
-def group_rare_categories(ser: pd.Series, prob: float, cum_prob: float) -> pd.Series:
+def group_rare_categories(
+    ser: pd.Series,
+    prob: float = None,
+    cum_prob: float = None,
+) -> pd.Series:
     """Group all categories whose share of the Series amount to fewer than cum_prob into an "Other" category
 
     Parameters
@@ -316,6 +320,13 @@ def group_rare_categories(ser: pd.Series, prob: float, cum_prob: float) -> pd.Se
     pd.Series
         pandas.Series
     """
+    if not prob and not cum_prob:
+        raise ValueError("Either prob or cum_prob must be passed")
+    if prob and not (0 <= prob <= 1):
+        raise ValueError("prob must be between 0 and 1")
+    if cum_prob and not (0 <= prob <= 1):
+        raise ValueError("cum_prob must be between 0 and 1")
+
     ser_out = ser.copy()
 
     ser_out = ser_out.cat.add_categories("Other")
