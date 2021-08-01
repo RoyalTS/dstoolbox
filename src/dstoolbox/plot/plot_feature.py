@@ -373,7 +373,7 @@ def plot_feature(
             ),
             y=alt.Y(
                 "mean:Q",
-                axis=alt.Axis(title="Mean target"),
+                axis=alt.Axis(title=f"Mean {target_var}"),
                 scale=alt.Scale(
                     domain=(
                         # max((df_upper["mean"] - df_upper["stderr"].fillna(0)).min(), 0),
