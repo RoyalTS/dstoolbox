@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from itertools import tee
 from typing import List
 
+import numpy as np
 import pandas as pd
 from loguru import logger
 
@@ -298,15 +299,17 @@ def calculate_midpoints(ser: pd.Series) -> pd.Series:
     return ser_cum_lag + ser / 2
 
 
-def group_rare_categories(ser: pd.Series, cum_prob: float) -> pd.Series:
+def group_rare_categories(ser: pd.Series, prob: float, cum_prob: float) -> pd.Series:
     """Group all categories whose share of the Series amount to fewer than cum_prob into an "Other" category
 
     Parameters
     ----------
     ser : pd.Series
         pandas.Series
-    cum_prob : float
-        cumulative probability of the categories to be grouped into "Other"
+    prob : float
+        absolute probability threshold below which categories will be grouped into "Other"
+    cumprob : float
+        cumulative probability threshold below which categories will be grouped into "Other"
 
     Returns
     -------
@@ -316,10 +319,24 @@ def group_rare_categories(ser: pd.Series, cum_prob: float) -> pd.Series:
     ser_out = ser.copy()
 
     ser_out = ser_out.cat.add_categories("Other")
-    ser_out = ser_out.mask(
-        ser_out.map(ser_out.value_counts(normalize=True)) < cum_prob,
-        "Other",
-    )
+
+    # Get the relative frequencies of the categories
+    frequencies = ser_out.value_counts(normalize=True)
+
+    if prob:
+        # replace each category with its relative frequency and compare against threshold
+        # if comparison is True, replace with Other
+        ser_out = ser_out.mask(
+            ser_out.map(frequencies).astype(np.float64) < prob,
+            "Other",
+        )
+    if cum_prob:
+        decum_frequencies = 1 - frequencies.cumsum()
+
+        ser_out = ser_out.mask(
+            ser_out.map(decum_frequencies).astype(np.float64) < prob,
+            "Other",
+        )
 
     ser_out = ser_out.cat.remove_unused_categories()
 
