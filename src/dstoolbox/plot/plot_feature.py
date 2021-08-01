@@ -190,7 +190,7 @@ def plot_feature(
             print(
                 'Variable has more than than 100 categories. Grouping categories that amount to less than 0.1% into "Other" category',
             )
-            df[feature] = group_rare_categories(df[feature], 0.001)
+            df[feature] = group_rare_categories(df[feature], cum_prob=0.001)
 
         # unless the categorical is ordered already, order by frequency
         if not df[feature].cat.ordered:
