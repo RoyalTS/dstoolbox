@@ -322,9 +322,9 @@ def group_rare_categories(
     """
     if not prob and not cum_prob:
         raise ValueError("Either prob or cum_prob must be passed")
-    if prob and not (0 <= prob <= 1):
+    if prob and not (0.0 <= prob <= 1.0):
         raise ValueError("prob must be between 0 and 1")
-    if cum_prob and not (0 <= prob <= 1):
+    if cum_prob and not (0.0 <= cum_prob <= 1.0):
         raise ValueError("cum_prob must be between 0 and 1")
 
     ser_out = ser.copy()
