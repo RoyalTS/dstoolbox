@@ -7,10 +7,12 @@ import altair as alt
 def set_altair_locale(locale: str) -> None:
     """Set Altair locale.
 
+    Sets time and currency format to the specified locale.
+
     Parameters
     ----------
     locale : str
-        name of the locale, e.g. "en-GB"
+        name of the locale in ISO 639-1 standard language code form, e.g. "en-GB"
     """
 
     format_url = (
