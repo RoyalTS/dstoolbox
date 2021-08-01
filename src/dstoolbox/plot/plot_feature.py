@@ -4,6 +4,7 @@ from typing import List, Optional, Tuple, Union
 import altair as alt
 import numpy as np
 import pandas as pd
+from loguru import logger
 
 from dstoolbox.pandas.data_munging import group_rare_categories
 from dstoolbox.utils.formatting import millify
@@ -187,8 +188,9 @@ def plot_feature(
         tick_min_step = 1
 
         if df[feature].nunique() > 100:
-            print(
-                'Variable has more than than 100 categories. Grouping categories that amount to less than 0.1% into "Other" category',
+            logger.info(
+                "Variable has more than than 100 categories. Grouping "
+                f'categories that amount to less than 0.1% into "Other" category',
             )
             df[feature] = group_rare_categories(df[feature], cum_prob=0.001)
 
