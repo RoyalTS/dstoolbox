@@ -352,3 +352,13 @@ def group_rare_categories(
     ser_out = ser_out.cat.remove_unused_categories()
 
     return ser_out
+
+
+def percentile(n):
+    """Return the nth percentile and give the resulting series a pretty name."""
+
+    def percentile_(x):
+        return x.quantile(n)
+
+    percentile_.__name__ = f"percentile_{n * 100:02.0f}"
+    return percentile_
