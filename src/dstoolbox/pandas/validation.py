@@ -37,24 +37,25 @@ def check_indices_all_equal(*args):
         )
 
 
-def check_columns_present(df: pd.DataFrame, column_names: typing.List[str]) -> None:
+def check_columns_present(df: pd.DataFrame, required_columns: typing.List[str]) -> None:
     """Raise ValueError if the passed DataFrame does not contain the passsed columns.
 
     Parameters
     ----------
     df : pd.DataFrame
         pd.DataFrame
-    column_names : List[str]
+    required_columns : List[str]
         column name
 
     Raises
     ------
     ValueError
-        raised if at least one of column_names is not in df
+        raised if at least one of required_columns is not in df
     """
-    columns_missing = set(column_names) - set(df.columns.tolist())
-    if columns_missing:
+    missing_columns = list(set(required_columns) - set(df.columns.tolist()))
+
+    if missing_columns:
         raise ValueError(
-            f"DataFrame must contain '{column_names}'"
-            " but is missing {columns_missing}",
+            f"DataFrame must contain '{required_columns}'"
+            f" but is missing {missing_columns}",
         )
