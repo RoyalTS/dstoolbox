@@ -344,9 +344,11 @@ def plot_feature(
 
     lower = (lower_bars + lower_text).properties(height=100)
 
+    # if no target_var, just return the lower bar chart
     if not target_var:
         complete_chart = lower
 
+    # if a target_var, calculate mean, standard deviation and count of target on a feature and construct the upper plot
     else:
         if split_var:
             grouping_vars.append(split_var)
@@ -361,6 +363,16 @@ def plot_feature(
         )
         df_upper["stderr"] = df_upper["std"] / np.sqrt(df_upper["count"])
 
+        is_target_boolean = pd.api.types.is_categorical_dtype(df[target_var])
+        is_target_binary = (
+            pd.api.types.is_numeric_dtype(df[target_var])
+            and df[target_var].astype(np.float64).isin([0.0, 1.0]).all()
+        )
+        if is_target_boolean or is_target_binary:
+            y_axis = alt.Axis(title=f"Mean {target_var}", format="%")
+        else:
+            y_axis = alt.Axis(title=f"Mean {target_var}")
+
         base_upper = alt.Chart(df_upper).encode(
             x=alt.X(
                 **common_x,
@@ -373,7 +385,7 @@ def plot_feature(
             ),
             y=alt.Y(
                 "mean:Q",
-                axis=alt.Axis(title=f"Mean {target_var}"),
+                axis=y_axis,
                 scale=alt.Scale(
                     domain=(
                         # max((df_upper["mean"] - df_upper["stderr"].fillna(0)).min(), 0),
