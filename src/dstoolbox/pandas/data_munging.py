@@ -1,6 +1,4 @@
 """Functions for data munging."""
-from collections.abc import Iterable
-from itertools import tee
 from typing import List
 
 import numpy as np
@@ -248,39 +246,7 @@ def decimal_time_of_day(ser: pd.Series) -> pd.Series:
     return (ser.dt.hour * 3600 + ser.dt.minute * 60 + ser.dt.second) / 3600
 
 
-def _pairwise(iterable: Iterable) -> list:
-    """Returns all pairs of successive elements of a list:
-
-    s -> (s0,s1), (s1,s2), (s2, s3), ...
-    """
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
-
-
-def check_lengths_all_equal(*args):
-    """Check the lengths of all passed objects is the same."""
-    lengths = [len(x) for x in args]
-    if not len(set(lengths)) == 1:
-        raise ValueError(
-            f"Passed Series and DataFrames don't all have the same lenghts: {lengths}",
-        )
-    else:
-        return lengths[0]
-
-
-def check_indices_all_equal(*args):
-    """Check the indices of all passed pandas Series or DataFrames are equal."""
-    pairs = _pairwise(args)
-    pairs_equal = [x.index.equals(y.index) for x, y in pairs]
-    if not all(pairs_equal):
-        unequal_pairs = [pair for ix, pair in enumerate(pairs) if not pairs_equal[ix]]
-        raise ValueError(
-            f"Passed Series and DataFrames don't all have indentical indices. :{unequal_pairs[0]}",
-        )
-
-
-def calculate_midpoints(ser: pd.Series) -> pd.Series:
+def calculate_midpoints(ser: pd.Series, position: float = 0.5) -> pd.Series:
     """Calculate the midpoints between the numbers in a pandas.Series
     (implicitly adding on a 0 at the start)
 
@@ -288,6 +254,9 @@ def calculate_midpoints(ser: pd.Series) -> pd.Series:
     ----------
     ser : pd.Series
         float series
+    position : float
+        position of "midpoint". Instead of calculating the true midpoint the function
+        will also calculate points e.g. 1/3 of the way towards the next value
 
     Returns
     -------
@@ -296,7 +265,8 @@ def calculate_midpoints(ser: pd.Series) -> pd.Series:
     """
     ser_cum = ser.cumsum()
     ser_cum_lag = ser_cum.shift(1).fillna(0)
-    return ser_cum_lag + ser / 2
+
+    return ser_cum_lag + position * ser
 
 
 def group_rare_categories(
