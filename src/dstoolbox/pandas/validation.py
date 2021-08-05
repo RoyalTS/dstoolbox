@@ -56,6 +56,6 @@ def check_columns_present(df: pd.DataFrame, required_columns: typing.List[str]) 
 
     if missing_columns:
         raise ValueError(
-            f"DataFrame must contain '{required_columns}'"
-            f" but is missing {missing_columns}",
+            f"DataFrame must contain columns'{', '.join(required_columns)}'"
+            f" but is missing {', '.join(missing_columns)}",
         )
