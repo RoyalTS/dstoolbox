@@ -161,7 +161,7 @@ def warehouse_info(
 
 
 class NotUniqueError(Exception):
-    """Exception raised when a Snowflake column is not unique
+    """Exception raised when a Snowflake column values are not unique
 
     Attributes
     ----------
@@ -170,7 +170,7 @@ class NotUniqueError(Exception):
     message : The message displayed
     """
 
-    def __init__(self, object, column, message="Column is not unique"):
+    def __init__(self, object, column, message="Column values are not unique"):
         self.object = object
         self.column = column
         self.message = message
