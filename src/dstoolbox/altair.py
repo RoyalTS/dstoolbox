@@ -1,3 +1,5 @@
+import typing
+
 import altair as alt
 from loguru import logger
 
@@ -11,7 +13,11 @@ def sample_for_altair(df):
         return df
 
 
-def date_axis(date_var: str, interval: str = "month") -> alt.Axis:
+def date_axis(
+    date_var: str,
+    interval: str = "month",
+    domain: typing.List[str] = None,
+) -> alt.Axis:
     """Generate a date axis for Altair plots.
 
     Parameters
@@ -20,24 +26,35 @@ def date_axis(date_var: str, interval: str = "month") -> alt.Axis:
         variable name for the date variable
     interval : str, optional
         the tick interval for the date axis. Default is "month"
+    domain : List[str], optional
+        domain for the date axis, a list of two date strings in YYYY-MM-DD format.
+        Default is None
 
     Returns
     -------
     alt.Axis
     """
+    # day formatting
+    if interval == "day":
+        scale_args = dict(nice={"interval": "day", "step": 1})
+        axis_args = dict(format="%d.%m.")
+
     # calendar week formatting
-    if interval == "week":
-        return alt.X(
-            date_var,
-            title=None,
-            axis=alt.Axis(format="W%W"),
-            scale=alt.Scale(nice={"interval": "day", "step": 7}),
-        )
+    elif interval == "week":
+        axis_args = dict(format="W%W")
+        scale_args = dict(nice={"interval": "day", "step": 7})
+
     # day/month formatting
     elif interval == "month":
-        return alt.X(
-            date_var,
-            title=None,
-            axis=alt.Axis(format="%e. %b"),
-            scale=alt.Scale(nice={"interval": "month", "step": 1}),
-        )
+        axis_args = dict(format="%e. %b")
+        scale_args = dict(nice={"interval": "month", "step": 1})
+
+    if domain:
+        scale_args["domain"] = domain
+
+    return alt.X(
+        date_var,
+        title=None,
+        axis=alt.Axis(**axis_args),
+        scale=alt.Scale(**scale_args),
+    )
