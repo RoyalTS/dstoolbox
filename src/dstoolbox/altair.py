@@ -34,6 +34,10 @@ def date_axis(
     -------
     alt.Axis
     """
+    intervals = ["day", "week", "month"]
+    if interval not in intervals:
+        raise ValueError(f'interval must be one of {", ".join(intervals)}')
+
     # day formatting
     if interval == "day":
         scale_args = dict(nice={"interval": "day", "step": 1})
