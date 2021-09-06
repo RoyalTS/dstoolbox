@@ -1,5 +1,5 @@
 """Functions for data munging."""
-from typing import List
+import typing
 
 import numpy as np
 import pandas as pd
@@ -23,7 +23,7 @@ def mixed_domain(series: pd.Series) -> pd.Series:
     return (series < 0).any() & (series > 0).any()
 
 
-def find_signed_numeric_cols(X: pd.DataFrame, domain: str = "both") -> List[str]:
+def find_signed_numeric_cols(X: pd.DataFrame, domain: str = "both") -> typing.List[str]:
     """Find the names of signed numeric columns.
 
     Return those columns from a pandas DataFrame whose values are either:
@@ -58,7 +58,7 @@ def find_signed_numeric_cols(X: pd.DataFrame, domain: str = "both") -> List[str]
     return signed_cols[signed_cols].index.tolist()
 
 
-def find_duplicated_columns(df: pd.DataFrame) -> List[str]:
+def find_duplicated_columns(df: pd.DataFrame) -> typing.List[str]:
     """Find columns with identical values.
 
     Parameters
@@ -94,7 +94,7 @@ def find_duplicated_columns(df: pd.DataFrame) -> List[str]:
 
 
 def concatenate_categorical_dfs(
-    dfs: List[pd.DataFrame],
+    dfs: typing.List[pd.DataFrame],
     **concat_kwargs,
 ) -> pd.DataFrame:
     """Concatenate pandas DataFrames while preserving categorical columns.
@@ -103,7 +103,7 @@ def concatenate_categorical_dfs(
 
     Parameters
     ----------
-    dfs : List[pandas.DataFrame]
+    dfs : typing.List[pandas.DataFrame]
 
     Returns
     -------
