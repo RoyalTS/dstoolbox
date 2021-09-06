@@ -6,25 +6,10 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
-from dstoolbox.pandas.data_munging import group_rare_categories
-from dstoolbox.utils.formatting import millify
-
-
-def _create_string_labels(categories):
-    """Create unique string labels for pandas Interval series.
-
-    Can be used to create pretty labels for the results of pandas.qcut()"""
-    for decimals in range(5):
-        string_labels = [
-            f"({millify(i.left, decimals=decimals)}, "
-            f"{millify(i.right, decimals=decimals)}]"
-            for i in categories
-        ]
-        # test for uniqueness
-        if len(set(string_labels)) == len(string_labels):
-            break
-
-    return string_labels
+from dstoolbox.pandas.data_munging import (
+    create_interval_string_labels,
+    group_rare_categories,
+)
 
 
 def _determine_axis_scale(ser: pd.Series) -> Tuple[str, int]:
@@ -245,7 +230,7 @@ def plot_feature(
                 raise ValueError(f"bins '{bins}' not recognized")
 
         # up the number of decimals in category labels until they become unique
-        string_labels = _create_string_labels(binned.cat.categories)
+        string_labels = create_interval_string_labels(binned.cat.categories)
 
         binned = binned.cat.set_categories(
             new_categories=string_labels,

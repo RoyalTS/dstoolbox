@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from dstoolbox.utils.formatting import millify
+
 
 def mixed_domain(series: pd.Series) -> pd.Series:
     """Determine mixed domain.
@@ -332,3 +334,39 @@ def percentile(n):
 
     percentile_.__name__ = f"percentile_{n * 100:02.0f}"
     return percentile_
+
+
+def create_interval_string_labels(
+    intervals: pd.IntervalIndex,
+    collapse_singletons: bool = True,
+):
+    """Create unique string labels for pandas Interval series.
+
+    Can be used to create pretty labels for the results of pandas.qcut()
+
+    Parameters
+    ----------
+    intervals : pandas.IntervalIndex
+        interval labels as e.g. returned by pandas.cut() and pandas.qcut()
+    collapse_singletons : bool, optional
+        collapse intervals that only contain a single value into that value, by default True
+
+    Returns
+    -------
+    list
+        list of strings
+    """
+    for decimals in range(5):
+        string_labels = [
+            f"({millify(i.left, decimals=decimals)}, "
+            f"{millify(i.right, decimals=decimals)}]"
+            # in case the interval is just a single integer, use that integer as the label
+            if (i.right - i.left != 1) & collapse_singletons
+            else millify(i.left, decimals=decimals)
+            for i in intervals
+        ]
+        # test for uniqueness
+        if len(set(string_labels)) == len(string_labels):
+            break
+
+    return string_labels
