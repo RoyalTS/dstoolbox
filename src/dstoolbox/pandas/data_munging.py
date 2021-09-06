@@ -326,7 +326,7 @@ def group_rare_categories(
     return ser_out
 
 
-def percentile(n):
+def percentile(n: float) -> typing.Callable[[pd.Series], pd.Series]:
     """Return the nth percentile and give the resulting series a pretty name."""
 
     def percentile_(x):
