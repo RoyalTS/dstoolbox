@@ -37,7 +37,7 @@ def get_last_commit_time(object_name, engine):
     return result
 
 
-def check_is_fresh(
+def check_object_is_fresh(
     object_name: str,
     engine: sqlalchemy.engine.base.Engine,
     same_day: bool = True,
@@ -80,7 +80,7 @@ class NotFreshError(Exception):
         return f"{self.message}: {self.objects}"
 
 
-def raise_if_not_all_fresh(
+def raise_if_not_all_objets_fresh(
     objects: typing.List[str],
     engine=sqlalchemy.engine.base.Engine,
     same_day: bool = False,
@@ -92,7 +92,12 @@ def raise_if_not_all_fresh(
     not_fresh = {
         obj: f"{get_last_commit_time(obj, engine):%Y-%m-%d %H:%M}"
         for obj in objects
-        if not check_is_fresh(obj, engine, same_day=same_day, max_hours=max_hours)
+        if not check_object_is_fresh(
+            obj,
+            engine,
+            same_day=same_day,
+            max_hours=max_hours,
+        )
     }
     if len(not_fresh) > 0:
         raise NotFreshError(objects=not_fresh)
