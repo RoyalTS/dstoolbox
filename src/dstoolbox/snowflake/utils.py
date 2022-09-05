@@ -31,7 +31,7 @@ def attach_timezone_to_datetime_cols(df: pd.DataFrame, tz: str = "UTC") -> pd.Da
 def get_last_commit_time(object_name, engine):
     with engine.connect() as con:
         result = con.execute(
-            f"SELECT TO_TIMESTAMP(SYSTEM$LAST_CHANGE_COMMIT_TIME('{object_name}') / 1000)",
+            f"SELECT TO_TIMESTAMP(SYSTEM$LAST_CHANGE_COMMIT_TIME('{object_name}') / 1e9)",
         ).fetchone()[0]
 
     return result
