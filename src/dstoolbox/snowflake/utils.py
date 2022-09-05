@@ -28,7 +28,23 @@ def attach_timezone_to_datetime_cols(df: pd.DataFrame, tz: str = "UTC") -> pd.Da
     return df
 
 
-def get_last_commit_time(object_name, engine):
+def get_last_commit_time(
+    object_name: str,
+    engine: sqlalchemy.engine.base.Engine,
+) -> datetime:
+    """Query Snowflake for the latest commit time – roughly, the time when the DB object was last modified
+
+    Parameters
+    ----------
+    object_name : str
+        Name of the DB object (e.g. table)
+    engine : sqlalchemy.engine.base.Engine
+        SQLAlchemy Snowflake engine
+
+    Returns
+    -------
+    datetime
+    """
     with engine.connect() as con:
         result = con.execute(
             f"SELECT TO_TIMESTAMP(SYSTEM$LAST_CHANGE_COMMIT_TIME('{object_name}') / 1e9)",
