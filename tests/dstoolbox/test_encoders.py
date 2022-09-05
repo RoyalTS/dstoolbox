@@ -1,9 +1,8 @@
 from contextlib import contextmanager
 
-import pytest
-
 import numpy as np
 import pandas as pd
+import pytest
 
 import dstoolbox.sklearn.transformers as t
 

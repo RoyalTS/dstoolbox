@@ -2,7 +2,6 @@ import pathlib
 import typing
 
 import jinja2
-from loguru import logger
 
 
 def set_up_template_env(path: typing.Union[str, pathlib.Path]) -> jinja2.Environment:
